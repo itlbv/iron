@@ -1,37 +1,41 @@
-extends Area2D
+extends KinematicBody2D
 
-export var speed = 150
-var screen_size
+const SPEED = 3
+var velocity =  Vector2()
 
-# shows last direction of movement. right - false; left - true
+# direction of last movement for choosing animation. right - false; left - true
 var last_direction = false;
 
 func _ready():
-	screen_size = get_viewport_rect().size
+	pass
+	#screen_size = get_viewport_rect().size
 
-func _process(delta):
-	var velocity = Vector2()
-	
-	# processing input
-	if Input.is_action_pressed("ui_right"):
-		velocity.x += 1
+func _physics_process(delta):
+	_set_velocity()
+	_set_animation()
+	move_and_collide(velocity)
+
+func _set_velocity():
 	if Input.is_action_pressed("ui_left"):
-		velocity.x -= 1
-	if Input.is_action_pressed("ui_down"):
-		velocity.y += 1
+		velocity.x = -1
+	elif Input.is_action_pressed("ui_right"):
+		velocity.x = 1
+	else: velocity.x = 0
+	
 	if Input.is_action_pressed("ui_up"):
-		velocity.y -= 1
-	 
+		velocity.y = -1
+	elif Input.is_action_pressed("ui_down"):
+		velocity.y = 1
+	else: velocity.y = 0
+	
 	if velocity.length() > 0:
-		velocity = velocity.normalized() * speed
+		velocity = velocity.normalized() * SPEED 
+
+func _set_animation():
+	if velocity.length() > 0:
 		$AnimationPlayer.play("walk")
 	else:
-		$AnimationPlayer.stop(false)
-	
-	# setting position
-	position += velocity * delta
-	position.x = clamp(position.x, 0, screen_size.x)
-	position.y = clamp(position.y, 0, screen_size.y)
+		$AnimationPlayer.stop()
 	
 	# flipping animation according to the last direction
 	if velocity.x != 0:
