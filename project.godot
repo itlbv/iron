@@ -16,7 +16,8 @@ _global_script_class_icons={
 [application]
 
 config/name="Iron"
-run/main_scene="res://Player.tscn"
+run/main_scene="res://Main.tscn"
+run/disable_stderr=true
 config/icon="res://icon.png"
 
 [rendering]
