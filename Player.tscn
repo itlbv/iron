@@ -3,9 +3,7 @@
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://assets/fox_walking.png" type="Texture" id=2]
 
-[sub_resource type="CapsuleShape2D" id=1]
-radius = 11.2192
-height = 5.19352
+[sub_resource type="CircleShape2D" id=3]
 
 [sub_resource type="Animation" id=2]
 resource_name = "walk"
@@ -34,8 +32,8 @@ hframes = 6
 frame = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0.0541763, 7.83111 )
-shape = SubResource( 1 )
+position = Vector2( -1.05416, 17.2094 )
+shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/walk = SubResource( 2 )
