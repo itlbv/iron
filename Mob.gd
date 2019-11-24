@@ -17,7 +17,6 @@ func _on_MeleeRange_body_entered(body):
 	if body.get_name() == self.get_name():
 		return 
 	$AnimationPlayer.play("attack")
-	print(str(body) + " entered")
 
 
 func _on_MeleeRange_body_exited(body):
