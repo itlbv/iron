@@ -3,9 +3,18 @@ extends Node2D
 onready var nav2d : Navigation2D = $NavMap
 var selectedMob : KinematicBody2D
 
+onready var mob_scn = preload("res://Mob.tscn")
+
 func _ready():
 	# connect _on_Mob_clicked signal
-	get_parent().get_node("Main/Mob/Selecting").connect("clicked", self, "_on_Mob_clicked")
+	$Mob/Selecting.connect("clicked", self, "_on_Mob_clicked")
+	_create_mob()
+
+func _create_mob():
+	var mob = mob_scn.instance()
+	mob.position = Vector2(500, 500)
+	add_child(mob)
+	mob.get_node("Selecting").connect("clicked", self, "_on_Mob_clicked")
 
 func _on_Mob_clicked(clickedMob):
 	selectedMob = clickedMob
