@@ -95,11 +95,9 @@ radius = 18.3663
 [node name="Mob" type="KinematicBody2D"]
 position = Vector2( -0.188942, -0.283401 )
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_group_": true
-}
 
 [node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0, -17 )
 scale = Vector2( 1.3, 1.3 )
 texture = ExtResource( 2 )
 vframes = 5
@@ -114,13 +112,11 @@ anims/idle = SubResource( 4 )
 anims/walk = SubResource( 5 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, 17 )
 shape = SubResource( 6 )
 
 [node name="MeleeRange" type="Area2D" parent="."]
 
 [node name="MeleeCollision" type="CollisionShape2D" parent="MeleeRange"]
-position = Vector2( 0, 17 )
 shape = SubResource( 7 )
 [connection signal="body_entered" from="MeleeRange" to="." method="_on_MeleeRange_body_entered"]
 [connection signal="body_exited" from="MeleeRange" to="." method="_on_MeleeRange_body_exited"]
