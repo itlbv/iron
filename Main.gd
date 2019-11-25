@@ -18,6 +18,7 @@ func _create_mob():
 
 func _on_Mob_clicked(clickedMob):
 	selectedMob = clickedMob
+	$SelectionMarker.mob = selectedMob
 
 func _unhandled_input(event):
 	if not event is InputEventMouseButton:
