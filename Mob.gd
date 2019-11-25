@@ -1,41 +1,45 @@
 extends KinematicBody2D
 
-const SPEED = 50
+onready var animation = $AnimationTree.get("parameters/playback")
+
+const SPEED = 100
 var path = []
+var velocity
 
-onready var animation = $AnimationPlayer
-onready var state_machine = $AnimationTree.get("parameters/playback")
+# direction of last movement. right - false; left - true
+var last_direction = false
 
-func _ready():
-	animation.play("idle") 
+func _process(delta):
+	_set_animation()
 
-#func _process(delta):
-#	pass
+func _set_animation():
+	if velocity.length() > 0:
+		animation.travel("walk")
+		
+	# flipping animation according to the last direction
+	if velocity.x != 0:
+		last_direction = velocity.x < 0
+	$Sprite.flip_h = last_direction
 
 func _physics_process(delta):
-	_movePath(delta)
+	_move()
 
-func _movePath(delta):
-	if path.size() == 0:
-		return
-	
-	var start_point = position
-	var distance = SPEED * delta
-	for i in range(path.size()):
-		var dist_to_next = start_point.distance_to(path[0])
-		if distance <= dist_to_next and distance >= 0.0:
-			position = start_point.linear_interpolate(path[0], distance / dist_to_next)
-			break
-		distance -= dist_to_next
-		start_point = path[0]
-		path.remove(0)
+func _move():
+	velocity = Vector2.ZERO
+	while path.size() > 0:
+		# get next waypoint
+		if (position.distance_to(path[0]) < 5):
+			path.remove(0)
+			continue;
+		var vec_to_next = path[0] - position
+		velocity = vec_to_next.normalized() * SPEED
+		break;
+	move_and_slide(velocity)
 
 func _on_MeleeRange_body_entered(body):
 	if body.get_name() == self.get_name():
-		return 
-	#animation.play("attack")
-	state_machine.travel("die")
-	set_physics_process(false)
+		return
+	animation.travel("attack")
 
 func _on_MeleeRange_body_exited(body):
-	animation.play("idle")
+	pass
