@@ -7,8 +7,7 @@ func _on_Selecting_input_event(viewport, event, shape_idx):
 	if not event is InputEventMouseButton:
 		return
 	if not event.pressed:
-		return
-	
+		return	
 	if event.button_index == BUTTON_LEFT:
 		emit_signal("left_click", get_parent())
 	if event.button_index == BUTTON_RIGHT:

@@ -18,21 +18,35 @@ func _create_mob():
 	mob.get_node("Selecting").connect("left_click", self, "_on_Mob_left_click")
 	mob.get_node("Selecting").connect("right_click", self, "_on_Mob_right_click")
 
-func _on_Mob_right_click(clickedMob):
-	if clickedMob == selectedMob:
-		return
-
 func _on_Mob_left_click(clickedMob):
 	selectedMob = clickedMob
 	$SelectionMarker.mob = selectedMob
+	print("on_Mob_left_click")
+
+func _on_Mob_right_click(clickedMob):
+	if clickedMob == selectedMob\
+	or selectedMob == null:
+		return
+	selectedMob.target = clickedMob
+	print("on_Mob_right_click")
 
 func _unhandled_input(event):
 	if not event is InputEventMouseButton:
 		return
-	if event.button_index != BUTTON_RIGHT or not event.pressed:
+	if not event.pressed:
+		return
+	
+	print("_unhandled_input")
+	if event.button_index == BUTTON_LEFT\
+	and selectedMob != null:
+		selectedMob = null
+		$SelectionMarker.mob = null
+		return
+	
+	if event.button_index != BUTTON_RIGHT:
 		return
 	if selectedMob == null:
 		return
 	var new_path = nav2d.get_simple_path(selectedMob.global_position, event.global_position, false)
 	selectedMob.path = new_path
-	#$Line2D.points = new_path
+	$Line2D.points = new_path

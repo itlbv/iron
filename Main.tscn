@@ -18,7 +18,7 @@ position = Vector2( 451.201, 201.014 )
 position = Vector2( 553.519, 202.486 )
 
 [node name="Line2D" type="Line2D" parent="."]
-width = 3.0
+width = 2.0
 default_color = Color( 1, 0, 0, 1 )
 texture_mode = 1479790096
 

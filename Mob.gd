@@ -9,6 +9,8 @@ var velocity
 # direction of last movement. right - false; left - true
 var last_direction = false
 
+var target
+
 func _process(delta):
 	_set_animation()
 
