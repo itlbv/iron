@@ -7,16 +7,22 @@ onready var mob_scn = preload("res://Mob.tscn")
 
 func _ready():
 	# connect _on_Mob_clicked signal
-	$Mob/Selecting.connect("clicked", self, "_on_Mob_clicked")
+	$Mob/Selecting.connect("left_click", self, "_on_Mob_left_click")
+	$Mob/Selecting.connect("right_click", self, "_on_Mob_right_click")
 	_create_mob()
 
 func _create_mob():
 	var mob = mob_scn.instance()
 	mob.position = Vector2(500, 500)
 	add_child(mob)
-	mob.get_node("Selecting").connect("clicked", self, "_on_Mob_clicked")
+	mob.get_node("Selecting").connect("left_click", self, "_on_Mob_left_click")
+	mob.get_node("Selecting").connect("right_click", self, "_on_Mob_right_click")
 
-func _on_Mob_clicked(clickedMob):
+func _on_Mob_right_click(clickedMob):
+	if clickedMob == selectedMob:
+		return
+
+func _on_Mob_left_click(clickedMob):
 	selectedMob = clickedMob
 	$SelectionMarker.mob = selectedMob
 
