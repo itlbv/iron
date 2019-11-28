@@ -95,21 +95,35 @@ func _stop():
 	state = states.IDLE
 	moveTimer.stop()
 
-func _on_MeleeRange_body_entered(body):
-	if not typeof(target) == TYPE_OBJECT:
-		return
-	if body == target:
-		_stop()
-		state = states.FIGHT
-
-func _on_MeleeRange_body_exited(body):
-	pass
-
 func _set_movement():
 	_can_see_target()
 
 func _on_MoveTimer_timeout():
 	_set_movement()
 
+func _on_MeleeRange_body_entered(body):
+	if not typeof(target) == TYPE_OBJECT:
+		return
+	if body == target:
+		_stop()
+		state = states.FIGHT
+		attack_timer.start()
+		_on_AttackTimer_timeout()
+
+func _on_MeleeRange_body_exited(body):
+	state = states.MOVE
+	moveTimer.start()
+	attack_timer.stop()
+
+onready var attack_timer = $AttackTimer
 func _fight():
+	pass
+
+func _on_AttackTimer_timeout():
 	animation.travel("attack")
+	target.defend()
+	target.attack_timer.start()
+
+func defend():
+	yield(get_tree().create_timer(0.2), "timeout")
+	animation.travel("hurt")
