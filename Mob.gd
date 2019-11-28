@@ -32,7 +32,7 @@ func _physics_process(delta):
 	match state:
 		states.IDLE : pass
 		states.MOVE: _move()
-		states.FIGHT: pass
+		states.FIGHT: _fight()
 
 func _move():
 	if target == null: 
@@ -101,7 +101,6 @@ func _on_MeleeRange_body_entered(body):
 	if body == target:
 		_stop()
 		state = states.FIGHT
-		animation.travel("attack")
 
 func _on_MeleeRange_body_exited(body):
 	pass
@@ -111,3 +110,6 @@ func _set_movement():
 
 func _on_MoveTimer_timeout():
 	_set_movement()
+
+func _fight():
+	animation.travel("attack")
