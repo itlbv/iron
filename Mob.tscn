@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Mob.gd" type="Script" id=1]
 [ext_resource path="res://assets/gladiator_spritesheet.png" type="Texture" id=2]
@@ -119,6 +119,8 @@ auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=18]
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=23]
+
 [sub_resource type="AnimationNodeStateMachine" id=19]
 states/attack/node = SubResource( 7 )
 states/attack/position = Vector2( 257.625, -20.9375 )
@@ -130,7 +132,7 @@ states/idle/node = SubResource( 10 )
 states/idle/position = Vector2( 423, 46.5 )
 states/walk/node = SubResource( 11 )
 states/walk/position = Vector2( 255.188, 112.063 )
-transitions = [ "idle", "attack", SubResource( 12 ), "attack", "idle", SubResource( 13 ), "idle", "walk", SubResource( 14 ), "walk", "idle", SubResource( 15 ), "idle", "hurt", SubResource( 16 ), "hurt", "idle", SubResource( 17 ), "idle", "die", SubResource( 18 ) ]
+transitions = [ "idle", "attack", SubResource( 12 ), "attack", "idle", SubResource( 13 ), "idle", "walk", SubResource( 14 ), "walk", "idle", SubResource( 15 ), "idle", "hurt", SubResource( 16 ), "hurt", "idle", SubResource( 17 ), "idle", "die", SubResource( 18 ), "walk", "attack", SubResource( 23 ) ]
 start_node = "idle"
 end_node = "die"
 graph_offset = Vector2( 0, -111.507 )
@@ -159,7 +161,7 @@ scale = Vector2( 1.3, 1.3 )
 texture = ExtResource( 2 )
 vframes = 5
 hframes = 8
-frame = 3
+frame = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/attack = SubResource( 2 )

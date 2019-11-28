@@ -2,9 +2,10 @@ extends KinematicBody2D
 
 onready var animation = $AnimationTree.get("parameters/playback")
 onready var moveTimer = $MoveTimer
+onready var navMap = get_tree().get_root().get_node("Main/NavMap")
 
 const SPEED = 100
-var path = []
+var path
 var usePath
 var velocity = Vector2.ZERO
 
@@ -28,30 +29,51 @@ func _set_animation():
 	$Sprite.flip_h = last_direction
 
 func _physics_process(delta):
-	velocity = Vector2.ZERO
 	match state:
+		states.IDLE : pass
 		states.MOVE: _move()
 		states.FIGHT: pass
 
 func _move():
-	if target == null: return
+	if target == null: 
+		print("MOVE while no target")
+		return
 	if usePath == null: 
-		_can_see_target()
+		_can_see_target()	
 	velocity = _get_path_velocity() if usePath else _get_steering_velocity()
 	move_and_slide(velocity)
 
 func _can_see_target():
-	var collision = get_world_2d().direct_space_state.intersect_ray(position, target.position, [self])
-	usePath = collision.collider != target
+	var collision 
+	if typeof(target) == TYPE_OBJECT:
+		collision = get_world_2d().direct_space_state.intersect_ray(position, target.position, [self])
+		usePath = collision.collider != target
+	elif typeof(target) == TYPE_VECTOR2:
+		collision = get_world_2d().direct_space_state.intersect_ray(position, target, [self])
+		usePath = collision.size() != 0
 	print("path" if usePath else "steer")
 
 func _get_steering_velocity():
-	if target.position.distance_to(position) < 25:
+	var trg
+	if typeof(target) == TYPE_OBJECT:
+		trg = target.position
+	elif typeof(target) == TYPE_VECTOR2:
+		trg = target
+
+	if trg.distance_to(position) < 5:
 		return Vector2.ZERO
-	var vect_to_target = target.position - position;
+	var vect_to_target = trg - position;
 	return vect_to_target.normalized() * SPEED
 
+func _set_path():
+	if typeof(target) == TYPE_OBJECT:
+		path = navMap.get_simple_path(position, target.position, false)
+	elif typeof(target) == TYPE_VECTOR2:
+		path = navMap.get_simple_path(position, target, false)
+
 func _get_path_velocity():
+	if path == null:
+		_set_path()
 	while path.size() > 0:
 		# get next waypoint
 		if (position.distance_to(path[0]) < 5):
@@ -65,16 +87,27 @@ func set_target(targ):
 	state = states.MOVE
 	moveTimer.start()
 
+func _stop():
+	print("stop")
+	velocity = Vector2.ZERO
+	usePath = null
+	path = null
+	state = states.IDLE
+	moveTimer.stop()
+
 func _on_MeleeRange_body_entered(body):
-	print("body_enter")
+	if not typeof(target) == TYPE_OBJECT:
+		return
 	if body == target:
-		print("body_target")
-		moveTimer.stop()
+		_stop()
 		state = states.FIGHT
 		animation.travel("attack")
 
 func _on_MeleeRange_body_exited(body):
 	pass
 
-func _on_MoveTimer_timeout():
+func _set_movement():
 	_can_see_target()
+
+func _on_MoveTimer_timeout():
+	_set_movement()
