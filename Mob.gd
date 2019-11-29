@@ -12,12 +12,22 @@ var velocity = Vector2.ZERO
 enum states {IDLE, MOVE, FIGHT}
 var state = states.IDLE
 
+var hp = 2
+var id = 1
+
 # direction of last movement. right - false; left - true
 var last_direction = false
 
 var target setget set_target
 
 func _process(delta):
+	#print("process " + str(id))
+	if hp <= 0:
+		animation.travel("die")
+		animation.stop()
+		set_process(false)
+		set_physics_process(false)
+		return
 	_set_animation()
 
 func _set_animation():
@@ -106,6 +116,7 @@ func _on_MeleeRange_body_entered(body):
 		return
 	if body == target:
 		_stop()
+		print(str(id) + " body enter")
 		state = states.FIGHT
 		attack_timer.start()
 		_on_AttackTimer_timeout()
@@ -121,9 +132,12 @@ func _fight():
 
 func _on_AttackTimer_timeout():
 	animation.travel("attack")
-	target.defend()
-	target.attack_timer.start()
+	print(str(self) + str(target) + str(hp))
+	if not target == null:
+		target.defend()
+		target.attack_timer.start()
 
 func defend():
 	yield(get_tree().create_timer(0.2), "timeout")
 	animation.travel("hurt")
+	hp -= 1
