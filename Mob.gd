@@ -23,20 +23,19 @@ onready var move_timer = $MoveTimer
 onready var attack_timer = $AttackTimer
 
 func _ready():
-	$Label.text = str(id)
+	$IdLabel.text = str(id)
 
 func _process(delta):
-	#print("process " + str(id))
-	if hp <= 0:
-		animation.travel("die")
-		animation.stop()
-		attack_timer.stop()
-		move_timer.stop()
-		set_process(false)
-		set_physics_process(false)
-		_log("die")
-		return
 	_set_animation()
+
+func _die():
+	_log("die")
+	animation.travel("die")
+	#animation.stop()
+	attack_timer.stop()
+	move_timer.stop()
+	set_process(false)
+	set_physics_process(false)
 
 func _set_animation():
 	if velocity.length() > 0:
@@ -69,8 +68,7 @@ func _can_see_target():
 	elif typeof(target) == TYPE_VECTOR2:
 		collision = get_world_2d().direct_space_state.intersect_ray(position, target, [self])
 		usePath = collision.size() != 0
-	_log("path" if usePath else "steer")
-	_log("")
+	#_log("path" if usePath else "steer")
 
 func _get_steering_velocity():
 	var trg
@@ -94,9 +92,6 @@ func _set_path():
 func _get_path_velocity():
 	if path == null:
 		_set_path()
-	if path.size() == 0:
-		_log("stop from path movement")
-		_stop()
 	while path.size() > 0:
 		# get next waypoint
 		if (position.distance_to(path[0]) < 5):
@@ -141,18 +136,26 @@ func _fight():
 
 func defend():
 	yield(get_tree().create_timer(0.2), "timeout")
-	animation.travel("hurt")
-	--hp
+	hp -= 1
+	if _is_dead():
+		_die()
+	else: animation.travel("hurt")
 
 func _on_MoveTimer_timeout():
 	_set_movement()
 
 func _on_AttackTimer_timeout():
+	if target._is_dead():
+		target == null
+		return
 	animation.travel("attack")
 	_log("attack " + str(target) + str(hp))
 	if not target == null:
 		target.defend()
 		#target.attack_timer.start()
+
+func _is_dead():
+	return hp <= 0
 
 func _log(msg):
 	print(str(id) + ": " + msg)
