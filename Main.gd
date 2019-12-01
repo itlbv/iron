@@ -28,14 +28,12 @@ func _create_mob():
 func _on_Mob_left_click(clickedMob):
 	selectedMob = clickedMob
 	$SelectionMarker.mob = selectedMob
-	print("on_Mob_left_click")
 
 func _on_Mob_right_click(clickedMob):
 	if clickedMob == selectedMob\
 	or selectedMob == null:
 		return
 	selectedMob.target = clickedMob
-	print("on_Mob_right_click")
 
 func _unhandled_input(event):
 	if not event is InputEventMouseButton:

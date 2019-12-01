@@ -2,8 +2,13 @@ extends KinematicBody2D
 
 onready var animation = $AnimationTree.get("parameters/playback")
 onready var navMap = get_tree().get_root().get_node("Main/NavMap")
+onready var attack_timer = $AttackTimer
+onready var move_timer = $MoveTimer
 
+var id = 1
+var hp = 2
 const SPEED = 100
+
 var path
 var usePath
 var velocity = Vector2.ZERO
@@ -11,16 +16,11 @@ var velocity = Vector2.ZERO
 enum states {IDLE, MOVE, FIGHT}
 var state = states.IDLE
 
-var hp = 2
-var id = 1
-
-# direction of last movement. right - false; left - true
-var last_direction = false
-
 var target setget set_target
+var trg_pos
 
-onready var move_timer = $MoveTimer
-onready var attack_timer = $AttackTimer
+# last movement direction. right - false; left - true
+var last_direction = false
 
 func _ready():
 	$IdLabel.text = str(id)
@@ -28,68 +28,47 @@ func _ready():
 func _process(delta):
 	_set_animation()
 
-func _die():
-	_log("die")
-	animation.travel("die")
-	#animation.stop()
-	attack_timer.stop()
-	move_timer.stop()
-	set_process(false)
-	set_physics_process(false)
-
 func _set_animation():
 	if velocity.length() > 0:
 		animation.travel("walk")
-	# flipping animation according to the last direction
+	# flip animation according to last movement direction
 	if velocity.x != 0:
 		last_direction = velocity.x < 0
 	$Sprite.flip_h = last_direction
 
 func _physics_process(delta):
 	match state:
-		states.IDLE : pass
 		states.MOVE: _move()
-		states.FIGHT: _fight()
 
 func _move():
 	if target == null: 
-		_log("MOVE while no target")
+		_log("MOVE WHILE NO TARGET")
 		return
-	if usePath == null: 
-		_can_see_target()	
+	if usePath == null:
+		_log("USEPATH IS NULL")
+	_set_target_position()
 	velocity = _get_path_velocity() if usePath else _get_steering_velocity()
 	move_and_slide(velocity)
 
+func _on_MoveTimer_timeout():
+	_can_see_target()
+
 func _can_see_target():
-	var collision 
+	var collision = get_world_2d().direct_space_state.intersect_ray(position, trg_pos, [self])
 	if typeof(target) == TYPE_OBJECT:
-		collision = get_world_2d().direct_space_state.intersect_ray(position, target.position, [self])
 		usePath = collision.collider != target
 	elif typeof(target) == TYPE_VECTOR2:
-		collision = get_world_2d().direct_space_state.intersect_ray(position, target, [self])
 		usePath = collision.size() != 0
 	#_log("path" if usePath else "steer")
 
-func _get_steering_velocity():
-	var trg
-	if typeof(target) == TYPE_OBJECT:
-		trg = target.position
-	elif typeof(target) == TYPE_VECTOR2:
-		trg = target
-
-	if trg.distance_to(position) < 5:
+func _get_steering_velocity() -> Vector2:
+	if position.distance_to(trg_pos) < 5:
 		_stop()
 		return Vector2.ZERO
-	var vect_to_target = trg - position;
+	var vect_to_target = trg_pos - position;
 	return vect_to_target.normalized() * SPEED
 
-func _set_path():
-	if typeof(target) == TYPE_OBJECT:
-		path = navMap.get_simple_path(position, target.position, false)
-	elif typeof(target) == TYPE_VECTOR2:
-		path = navMap.get_simple_path(position, target, false)
-
-func _get_path_velocity():
+func _get_path_velocity() -> Vector2:
 	if path == null:
 		_set_path()
 	while path.size() > 0:
@@ -100,10 +79,18 @@ func _get_path_velocity():
 		var vec_to_next = path[0] - position
 		return vec_to_next.normalized() * SPEED
 
-func set_target(targ):
-	target = targ
-	state = states.MOVE
+func _set_path():
+	path = navMap.get_simple_path(position, trg_pos, false)
+
+func set_target(trg):
+	target = trg
+	_set_target_position()
+	_can_see_target()
 	move_timer.start()
+	state = states.MOVE
+
+func _set_target_position():
+	trg_pos = target if typeof(target) == TYPE_VECTOR2 else target.position
 
 func _stop():
 	_log("stop")
@@ -113,27 +100,23 @@ func _stop():
 	state = states.IDLE
 	move_timer.stop()
 
-func _set_movement():
-	_can_see_target()
-
 func _on_MeleeRange_body_entered(body):
 	if not typeof(target) == TYPE_OBJECT:
 		return
 	if body == target:
 		_stop()
-		_log(" contact with target")
+		_log("contact with target")
 		state = states.FIGHT
 		attack_timer.start()
 		_on_AttackTimer_timeout()
 
 func _on_MeleeRange_body_exited(body):
-	state = states.MOVE
-	move_timer.start()
-	attack_timer.stop()
-
-func _fight():
-	pass
-
+	"""
+	if body == target:
+		state = states.MOVE
+		move_timer.start()
+		attack_timer.stop()
+	"""
 func defend():
 	yield(get_tree().create_timer(0.2), "timeout")
 	hp -= 1
@@ -141,10 +124,10 @@ func defend():
 		_die()
 	else: animation.travel("hurt")
 
-func _on_MoveTimer_timeout():
-	_set_movement()
-
 func _on_AttackTimer_timeout():
+	_attack()
+
+func _attack():
 	if target._is_dead():
 		target == null
 		return
@@ -153,6 +136,14 @@ func _on_AttackTimer_timeout():
 	if not target == null:
 		target.defend()
 		#target.attack_timer.start()
+
+func _die():
+	_log("die")
+	animation.travel("die")
+	attack_timer.stop()
+	move_timer.stop()
+	set_process(false)
+	set_physics_process(false)
 
 func _is_dead():
 	return hp <= 0
