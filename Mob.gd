@@ -4,6 +4,7 @@ onready var animation = $AnimationTree.get("parameters/playback")
 onready var navMap = get_tree().get_root().get_node("Main/NavMap")
 onready var attack_timer = $AttackTimer
 onready var move_timer = $MoveTimer
+onready var movement = $Movement
 
 var id = 1
 var hp = 2
@@ -27,6 +28,7 @@ func _ready():
 
 func _process(delta):
 	_set_animation()
+	movement.test()
 
 func _set_animation():
 	if velocity.length() > 0:
