@@ -3,15 +3,13 @@ extends KinematicBody2D
 onready var animation = $AnimationTree.get("parameters/playback")
 onready var navMap = get_tree().get_root().get_node("Main/NavMap")
 onready var attack_timer = $AttackTimer
-onready var move_timer = $MoveTimer
+
 onready var movement = $Movement
 
 var id = 1
 var hp = 2
 const SPEED = 100
 
-var path
-var usePath
 var velocity = Vector2.ZERO
 
 enum states {IDLE, MOVE, FIGHT}
@@ -28,7 +26,6 @@ func _ready():
 
 func _process(delta):
 	_set_animation()
-	movement.test()
 
 func _set_animation():
 	if velocity.length() > 0:
@@ -43,56 +40,15 @@ func _physics_process(delta):
 		states.MOVE: _move()
 
 func _move():
-	if target == null: 
-		_log("MOVE WHILE NO TARGET")
-		return
-	if usePath == null:
-		_log("USEPATH IS NULL")
-	_set_target_position()
-	velocity = _get_path_velocity() if usePath else _get_steering_velocity()
+	velocity = movement.get_velocity()
 	move_and_slide(velocity)
 
-func _on_MoveTimer_timeout():
-	_can_see_target()
-
-func _can_see_target():
-	var collision = get_world_2d().direct_space_state.intersect_ray(position, trg_pos, [self])
-	if typeof(target) == TYPE_OBJECT:
-		usePath = collision.collider != target
-	elif typeof(target) == TYPE_VECTOR2:
-		usePath = collision.size() != 0
-	#_log("path" if usePath else "steer")
-
-func _get_steering_velocity() -> Vector2:
-	if position.distance_to(trg_pos) < 5:
-		_stop()
-		return Vector2.ZERO
-	var vect_to_target = trg_pos - position;
-	return vect_to_target.normalized() * SPEED
-
-func _get_path_velocity() -> Vector2:
-	if path == null:
-		_set_path()
-	while path.size() > 0:
-		# get next waypoint
-		if (position.distance_to(path[0]) < 5):
-			path.remove(0)
-			continue;
-		var vec_to_next = path[0] - position
-		return vec_to_next.normalized() * SPEED
 
 func _set_path():
 	path = navMap.get_simple_path(position, trg_pos, false)
 
 func set_target(trg):
-	target = trg
-	_set_target_position()
-	_can_see_target()
-	move_timer.start()
-	state = states.MOVE
-
-func _set_target_position():
-	trg_pos = target if typeof(target) == TYPE_VECTOR2 else target.position
+	movement.set_target(trg)
 
 func _stop():
 	_log("stop")
