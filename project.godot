@@ -20,10 +20,6 @@ run/main_scene="res://Main.tscn"
 run/disable_stderr=true
 config/icon="res://icon.png"
 
-[display]
-
-window/dpi/allow_hidpi=true
-
 [rendering]
 
 environment/default_environment="res://default_env.tres"
