@@ -5,6 +5,8 @@ onready var navMap = get_tree().get_root().get_node("Main/NavMap")
 onready var attack_timer = $AttackTimer
 onready var move_timer = $MoveTimer
 
+onready var actions = load("res://mob/actions.gd").new()
+
 var id = 1
 var hp = 2
 const SPEED = 100
@@ -37,8 +39,7 @@ func _set_animation():
 	$Sprite.flip_h = last_direction
 
 func _physics_process(delta):
-	match state:
-		states.MOVE: _move()
+	actions.do()
 
 func _move():
 	if target == null: 

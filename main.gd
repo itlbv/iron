@@ -2,7 +2,7 @@ extends Node2D
 
 var selectedMob : KinematicBody2D
 
-onready var mob_scn = preload("res://Mob.tscn")
+onready var mob_scn = preload("res://mob/Mob.tscn")
 
 func _ready():
 	# connect _on_Mob_clicked signal
