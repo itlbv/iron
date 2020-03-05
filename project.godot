@@ -9,13 +9,37 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node2D",
+"class": "Action",
+"language": "GDScript",
+"path": "res://mob/actions/action.gd"
+}, {
 "base": "Reference",
 "class": "Actions",
 "language": "GDScript",
 "path": "res://mob/actions.gd"
+}, {
+"base": "Action",
+"class": "Fight",
+"language": "GDScript",
+"path": "res://mob/actions/fight.gd"
+}, {
+"base": "KinematicBody2D",
+"class": "Mob",
+"language": "GDScript",
+"path": "res://mob/mob.gd"
+}, {
+"base": "Action",
+"class": "Move",
+"language": "GDScript",
+"path": "res://mob/actions/move.gd"
 } ]
 _global_script_class_icons={
-"Actions": ""
+"Action": "",
+"Actions": "",
+"Fight": "",
+"Mob": "",
+"Move": ""
 }
 
 [application]

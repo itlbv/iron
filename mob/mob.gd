@@ -1,11 +1,38 @@
 extends KinematicBody2D
+class_name Mob
+
+onready var actions = load("res://mob/actions.gd").new(self)
+
+func _physics_process(delta):
+	#print(str(get_tree()))
+	actions.do()
+
+func move_to_position(position: Vector2) -> void:
+	actions.clear()
+	actions.add_move(null, position)
+
+func fight_with(target: Mob) -> void:
+	actions.clear()
+	actions.add_move(target, target.position)
+	actions.add_fight(target)
+
+
+
+
+
+
+
+
+
+
+
+
 
 onready var animation = $AnimationTree.get("parameters/playback")
 onready var navMap = get_tree().get_root().get_node("Main/NavMap")
 onready var attack_timer = $AttackTimer
 onready var move_timer = $MoveTimer
 
-onready var actions = load("res://mob/actions.gd").new()
 
 var id = 1
 var hp = 2
@@ -27,6 +54,7 @@ var last_direction = false
 func _ready():
 	$IdLabel.text = str(id)
 
+
 func _process(delta):
 	_set_animation()
 
@@ -37,9 +65,6 @@ func _set_animation():
 	if velocity.x != 0:
 		last_direction = velocity.x < 0
 	$Sprite.flip_h = last_direction
-
-func _physics_process(delta):
-	actions.do()
 
 func _move():
 	if target == null: 

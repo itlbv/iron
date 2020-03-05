@@ -33,7 +33,7 @@ func _on_Mob_right_click(clickedMob):
 	if clickedMob == selectedMob\
 	or selectedMob == null:
 		return
-	selectedMob.target = clickedMob
+	selectedMob.fight_with(clickedMob)
 
 func _unhandled_input(event):
 	if not event is InputEventMouseButton:
@@ -49,4 +49,4 @@ func _unhandled_input(event):
 	
 	if event.button_index == BUTTON_RIGHT\
 	and selectedMob != null:
-		selectedMob.target = event.global_position
+		selectedMob.move_to_position(event.global_position)
