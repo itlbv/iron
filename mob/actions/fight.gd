@@ -12,6 +12,7 @@ func _init(owner: Mob, target: Mob).(owner, target):
 func do() -> void:
 	if attack_timer.is_stopped():
 		attack_timer.start()
+		_attack_timer_timeout()
 
 func _attack_timer_timeout() -> void:
 	mob.animation.travel("attack")
