@@ -31,7 +31,18 @@ func _die():
 func is_dead():
 	return hp <= 0
 
+func _on_MeleeRange_body_entered(body):
+	actions.melee_range_enter(body)
 
+
+func _on_MeleeRange_body_exited(body):
+	actions.melee_range_exit(body)
+	"""
+	if body == target:
+		state = states.MOVE
+		move_timer.start()
+		attack_timer.stop()
+	"""
 
 
 
@@ -138,24 +149,6 @@ func _stop():
 	path = null
 	state = states.IDLE
 	move_timer.stop()
-
-func _on_MeleeRange_body_entered(body):
-	if not typeof(target) == TYPE_OBJECT:
-		return
-	if body == target:
-		_stop()
-		_log("contact with target")
-		state = states.FIGHT
-		attack_timer.start()
-		_on_AttackTimer_timeout()
-
-func _on_MeleeRange_body_exited(body):
-	"""
-	if body == target:
-		state = states.MOVE
-		move_timer.start()
-		attack_timer.stop()
-	"""
 
 
 func _on_AttackTimer_timeout():
