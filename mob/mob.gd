@@ -4,7 +4,6 @@ class_name Mob
 onready var actions = load("res://mob/actions.gd").new(self)
 
 func _physics_process(delta):
-	#print(str(get_tree()))
 	actions.do()
 
 func move_to_position(position: Vector2) -> void:
@@ -16,7 +15,21 @@ func fight_with(target: Mob) -> void:
 	actions.add_move(target, target.position)
 	actions.add_fight(target)
 
+func defend():
+	yield(get_tree().create_timer(0.2), "timeout")
+	hp -= 1
+	if is_dead():
+		_die()
+	else: animation.travel("hurt")
 
+func _die():
+	_log("die")
+	animation.travel("die")
+	set_process(false)
+	set_physics_process(false)
+
+func is_dead():
+	return hp <= 0
 
 
 
@@ -143,12 +156,7 @@ func _on_MeleeRange_body_exited(body):
 		move_timer.start()
 		attack_timer.stop()
 	"""
-func defend():
-	yield(get_tree().create_timer(0.2), "timeout")
-	hp -= 1
-	if _is_dead():
-		_die()
-	else: animation.travel("hurt")
+
 
 func _on_AttackTimer_timeout():
 	_attack()
@@ -163,16 +171,7 @@ func _attack():
 		target.defend()
 		#target.attack_timer.start()
 
-func _die():
-	_log("die")
-	animation.travel("die")
-	attack_timer.stop()
-	move_timer.stop()
-	set_process(false)
-	set_physics_process(false)
 
-func _is_dead():
-	return hp <= 0
 
 func _log(msg):
 	print(str(id) + ": " + msg)

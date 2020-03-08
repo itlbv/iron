@@ -1,8 +1,18 @@
 extends Action
 class_name Fight
 
-func _init(owner: Mob, target).(owner, target):
-	pass
+var attack_timer : Timer
+
+func _init(owner: Mob, target: Mob).(owner, target):
+	attack_timer = Timer.new()
+	attack_timer.wait_time = 1
+	attack_timer.connect("timeout", self, "_attack_timer_timeout")
+	mob.add_child(attack_timer)
 
 func do() -> void:
-	print("fight")
+	if attack_timer.is_stopped():
+		attack_timer.start()
+
+func _attack_timer_timeout() -> void:
+	mob.animation.travel("attack")
+	target.defend()
