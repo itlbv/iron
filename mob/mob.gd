@@ -1,21 +1,17 @@
 extends KinematicBody2D
 class_name Mob
 
-onready var animation = $AnimationTree.get("parameters/playback")
 onready var actions = load("res://mob/actions.gd").new(self)
 
 var id = 1
 var hp = 2
 const SPEED = 100
 
-# last movement direction. right - false; left - true
-var last_direction = false
-
 func _ready():
 	$IdLabel.text = str(id)
 
 func _process(delta):
-	_set_animation()
+	actions.set_animation()
 
 func _physics_process(delta):
 	actions.do()
@@ -34,22 +30,13 @@ func defend():
 	hp -= 1
 	if is_dead():
 		_die()
-	else: animation.travel("hurt")
+	else: actions.animation.travel("hurt")
 
 func _die():
 	_log("die")
-	animation.travel("die")
+	actions.animation.travel("die")
 	set_process(false)
 	set_physics_process(false)
-
-var velocity = Vector2.ZERO
-func _set_animation():
-	if velocity.length() > 0:
-		animation.travel("walk")
-	# flip animation according to last movement direction
-	if velocity.x != 0:
-		last_direction = velocity.x < 0
-	$Sprite.flip_h = last_direction
 
 func is_dead():
 	return hp <= 0

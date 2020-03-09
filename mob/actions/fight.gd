@@ -15,5 +15,5 @@ func do() -> void:
 		_attack_timer_timeout()
 
 func _attack_timer_timeout() -> void:
-	mob.animation.travel("attack")
+	mob.actions.animation.travel("attack")
 	target.defend()
