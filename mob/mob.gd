@@ -35,6 +35,7 @@ func defend():
 func _die():
 	_log("die")
 	actions.animation.travel("die")
+	actions.clear()
 	set_process(false)
 	set_physics_process(false)
 

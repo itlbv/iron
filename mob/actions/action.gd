@@ -8,5 +8,8 @@ func _init(mob_owner: Mob, trg: Mob):
 	mob = mob_owner
 	target = trg
 
-func do():
+func do() -> void:
+	pass
+
+func free_resources() -> void:
 	pass

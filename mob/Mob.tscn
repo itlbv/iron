@@ -192,12 +192,6 @@ margin_right = 8.0
 margin_bottom = 17.0
 custom_colors/font_color = Color( 1, 0.164706, 0.164706, 1 )
 text = "1"
-
-[node name="MoveTimer" type="Timer" parent="."]
-wait_time = 0.5
-
-[node name="AttackTimer" type="Timer" parent="."]
 [connection signal="body_entered" from="MeleeRange" to="." method="_on_MeleeRange_body_entered"]
 [connection signal="body_exited" from="MeleeRange" to="." method="_on_MeleeRange_body_exited"]
 [connection signal="input_event" from="Selecting" to="Selecting" method="_on_Selecting_input_event"]
-[connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]

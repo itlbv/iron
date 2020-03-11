@@ -38,6 +38,8 @@ func add_fight(target: Mob) -> void:
 	actions.append(fight)
 
 func clear() -> void :
+	for action in actions:
+		action.free_resources()
 	actions.clear()
 
 func melee_range_enter(body) -> void:
@@ -45,6 +47,7 @@ func melee_range_enter(body) -> void:
 		return
 	if actions.front().target == body\
 	and actions.front() is Move:
+		actions[0].free_resources()
 		actions.pop_front()
 	
 func melee_range_exit(body) -> void:
@@ -52,5 +55,6 @@ func melee_range_exit(body) -> void:
 		return
 	if actions.front().target == body\
 	and actions.front() is Fight:
+		actions[0].free_resources()
 		actions.pop_front()
 		mob.fight_with(body)

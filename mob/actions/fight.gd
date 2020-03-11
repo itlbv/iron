@@ -15,5 +15,9 @@ func do() -> void:
 		_attack_timer_timeout()
 
 func _attack_timer_timeout() -> void:
+	print("attack timer timeout")
 	mob.actions.animation.travel("attack")
 	target.defend()
+
+func free_resources() -> void:
+	attack_timer.queue_free()

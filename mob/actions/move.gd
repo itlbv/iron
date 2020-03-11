@@ -31,6 +31,7 @@ func do() -> void:
 	mob.move_and_slide(velocity)
 
 func _update_timer_timeout():
+	print(str(mob.id) + "move timer timeout")
 	if target != null:
 		destination = target.position
 	_setup_movement()
@@ -71,3 +72,6 @@ func _check_if_use_path() -> void:
 		usePath = collision.size() != 0
 	else:
 		usePath = collision.collider != target
+
+func free_resources() -> void:
+	update_timer.queue_free()
