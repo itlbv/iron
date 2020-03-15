@@ -4,7 +4,7 @@ class_name Mob
 onready var actions = load("res://mob/actions.gd").new(self)
 
 var id = 1
-var hp = 2
+var hp = 1000
 const SPEED = 100
 
 func _ready():
@@ -26,10 +26,13 @@ func fight_with(target: Mob) -> void:
 	actions.add_fight(target)
 
 func defend():
+	actions.reset_attack_time()
 	yield(get_tree().create_timer(0.2), "timeout")
 	hp -= 1
+	#_log(str(hp))
 	if is_dead():
-		_die()
+		#_die() 
+		pass
 	else: actions.animation.travel("hurt")
 
 func _die():

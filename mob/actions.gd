@@ -42,6 +42,12 @@ func clear() -> void :
 		action.free_resources()
 	actions.clear()
 
+func reset_attack_time() -> void:
+	if actions.empty():
+		return
+	if actions.front() is Fight:
+		actions.front().set_attack_time()
+
 func melee_range_enter(body) -> void:
 	if actions.empty():
 		return
