@@ -17,21 +17,22 @@ func _init(owner: Mob, target: Mob, dest: Vector2).(owner, target):
 	debug_path_line = mob.get_node("/root/Main/Line2D")
 	update_timer = Timer.new()	
 	update_timer.wait_time = 0.5
-# warning-ignore:return_value_discarded
 	update_timer.connect("timeout", self, "_update_timer_timeout")
 	mob.add_child(update_timer)
 
 func do() -> void:
-	#print(str(update_timer.get_time_left()))
 	if usePath == null:
 		_setup_movement()
+	
+	if mob.position.distance_to(destination) < 5:
+		_stop()
+		return
+	
 	velocity = Vector2.ZERO
 	velocity = _get_path_velocity() if usePath else _get_steering_velocity()
-# warning-ignore:return_value_discarded
 	mob.move_and_slide(velocity)
 
 func _update_timer_timeout():
-	#print(str(mob.id) + "move timer timeout")
 	if target != null:
 		destination = target.position
 	_setup_movement()
@@ -47,19 +48,17 @@ func _get_path_velocity() -> Vector2:
 		var vec_to_next = path[0] - mob.position
 		return vec_to_next.normalized() * mob.SPEED
 
+func _get_steering_velocity() -> Vector2:
+	var vect_to_target = destination - mob.position;
+	return vect_to_target.normalized() * mob.SPEED
+
 func _set_path():
 	path = navMap.get_simple_path(mob.position, destination, false)
 	debug_path_line.points = path
 
-func _get_steering_velocity() -> Vector2:
-	if mob.position.distance_to(destination) < 5:
-		_stop()
-		return Vector2.ZERO
-	var vect_to_target = destination - mob.position;
-	return vect_to_target.normalized() * mob.SPEED
-
 func _stop() -> void:
-	pass
+	free_resources()
+	mob.actions.actions.pop_front()
 
 func _setup_movement() -> void:
 	_check_if_use_path()
