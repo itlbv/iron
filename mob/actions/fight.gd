@@ -13,6 +13,8 @@ func _init(owner: Mob, target: Mob).(owner, target):
 	mob.add_child(attack_timer)
 
 func do() -> void:
+	if target.is_dead():
+		_stop()
 	if attack_timer.is_stopped():
 		attack_timer.start()
 		_attack_timer_timeout()
@@ -31,3 +33,6 @@ func set_attack_time() -> void:
 	attack_timer.wait_time = ATTACK_TIME + offset
 	if !attack_timer.is_stopped(): 
 		attack_timer.start(ATTACK_TIME + offset)
+
+func _stop() -> void:
+	mob.actions.delete_current_action()

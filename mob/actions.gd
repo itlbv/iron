@@ -42,6 +42,11 @@ func clear() -> void :
 		action.free_resources()
 	actions.clear()
 
+func delete_current_action() -> void:
+	if actions.empty():
+		return
+	actions.pop_front().free_resources()
+
 func reset_attack_time() -> void:
 	if actions.empty():
 		return

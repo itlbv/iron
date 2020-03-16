@@ -4,7 +4,7 @@ class_name Mob
 onready var actions = load("res://mob/actions.gd").new(self)
 
 var id = 1
-var hp = 2
+var hp = 5
 const SPEED = 100
 
 func _ready():
